@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Vision Analyzer</title>
+
+    <link rel="stylesheet"href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+            <h1>AI Vision Analyzer</h1>
+
+            <p>
+                Image Classification & Object Detection System
+            </p>
+        </header>
+
+
+        <div class="upload-card">
+
+            <h2>Upload an Image</h2>
+
+            <p>
+                Upload an image and let AI detect objects automatically.
+            </p>
+
+            <input
+                type="file"
+                id="imageInput"
+                accept="image/png, image/jpeg, image/jpg"
+            >
+
+            <button id="analyzeBtn">
+                Analyze Image
+            </button>
+
+            <p id="status"></p>
+
+        </div>
+
+
+        <div
+            class="results"
+            id="results"
+            style="display: none;"
+        >
+
+            <div class="image-section">
+
+                <h2>Detection Result</h2>
+
+                <img
+                    id="resultImage"
+                    src=""
+                    alt="Detection Result"
+                >
+
+            </div>
+
+
+            <div class="details-section">
+
+                <div class="stat-card">
+
+                    <h3>Total Objects</h3>
+
+                    <span id="totalObjects">
+                        0
+                    </span>
+
+                </div>
+
+
+                <h2>Detected Objects</h2>
+
+                <div id="detectionList"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script
+        src="{{ url_for('static', filename='js/script.js') }}">
+    </script>
+
+</body>
+
+</html>

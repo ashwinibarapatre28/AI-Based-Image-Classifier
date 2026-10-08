@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AI Vision Analyzer - Dashboard </title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='dashboard.css') }}">
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+    <!-- =====================================================
+         LEFT SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                AI
+            </div>
+
+            <div>
+                <h2>AI Vision</h2>
+                <span>Analyzer</span>
+            </div>
+
+        </div>
+
+
+        <nav>
+
+            <a href="/dashboard"
+               class="nav-item active">
+
+                Dashboard
+
+            </a>
+
+
+            <a href="/analytics"
+               class="nav-item">
+
+                Analytics
+
+            </a>
+
+
+            <a href="/history"
+               class="nav-item">
+
+                History
+
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- HEADER -->
+
+        <header class="top-header">
+
+            <h1>Dashboard</h1>
+
+            <h3>
+                Welcome to AI Vision Analyzer <br> </h3>
+
+            <p>Object Detection & Image Classification System</p>
+            
+        </header>
+
+
+
+        <!-- =================================================
+             STATISTICS
+        ================================================== -->
+
+        <section class="stats-grid">
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🖼️
+                </div>
+
+                <div>
+
+                    <h3>
+                        Total Analyses
+                    </h3>
+
+                    <strong id="totalAnalyses">
+                        {{ total_analyses }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🎯
+                </div>
+
+                <div>
+
+                    <h3>
+                        Total Objects
+                    </h3>
+
+                    <strong id="dashboardTotalObjects">
+                        {{ total_objects }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    📈
+                </div>
+
+                <div>
+
+                    <h3>
+                        Avg. Confidence
+                    </h3>
+
+                    <strong>
+                        {{ avg_confidence }}%
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🔍
+                </div>
+
+                <div>
+
+                    <h3>
+                        Most Detected
+                    </h3>
+
+                    <strong>
+                        {{ most_detected }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             MAIN ANALYSIS CARD
+        ================================================== -->
+
+        <section class="analysis-card">
+
+
+            <!-- UPLOAD HEADER -->
+
+            <div class="section-title">
+
+                <h2>
+                    Upload an Image
+                </h2>
+
+                <p>
+                    Upload an image and let AI detect
+                    objects automatically.
+                </p>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 UPLOAD FORM
+            ================================================== -->
+
+            <form id="uploadForm">
+
+
+                <div class="upload-area">
+
+
+                    <div class="upload-icon">
+                        📷
+                    </div>
+
+
+                    <h3>
+                        Choose an image
+                    </h3>
+
+
+                    <p>
+                        JPG, JPEG or PNG
+                    </p>
+
+
+                    <input
+                        type="file"
+                        id="imageInput"
+                        name="image"
+                        accept="image/*"
+                        required
+                    >
+
+
+                </div>
+
+
+
+                <!-- ANALYZE BUTTON -->
+
+                <button
+                    type="submit"
+                    class="analyze-btn">
+
+                    Analyze Image
+
+                </button>
+
+
+            </form>
+
+
+
+            <!-- STATUS -->
+
+            <p
+                id="statusMessage"
+                class="status-message">
+            </p>
+
+
+
+            <!-- =================================================
+                 DETECTION RESULT
+
+                 IMPORTANT:
+                 This is now INSIDE the same card.
+                 It will appear directly below Analyze Image.
+            ================================================== -->
+
+            <section
+                id="resultSection"
+                class="result-section hidden">
+
+
+                <h2>
+                    Detection Result
+                </h2>
+
+
+
+                <div class="result-grid">
+
+
+                    <!-- ===============================
+                         RESULT IMAGE
+                    ================================ -->
+
+                    <div class="result-image-card">
+
+                        <img
+                            id="resultImage"
+                            src=""
+                            alt="Detection Result"
+                        >
+
+                    </div>
+
+
+
+                    <!-- ===============================
+                         RESULT DETAILS
+                    ================================ -->
+
+                    <div class="result-details">
+
+
+                        <!-- TOTAL OBJECTS -->
+
+                        <div class="total-box">
+
+                            <h3>
+                                Total Objects
+                            </h3>
+
+                            <strong
+                                id="totalObjects">
+
+                                0
+
+                            </strong>
+
+                        </div>
+
+
+
+                        <!-- DETECTED OBJECTS -->
+
+                        <h2>
+                            Detected Objects
+                        </h2>
+
+
+                        <div
+                            id="detectedObjects">
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+        </section>
+
+
+    </main>
+
+</div>
+
+
+
+<script
+    src="{{ url_for('static', filename='dashboard.js') }}">
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>History - AI Vision Analyzer</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='dashboard.css') }}">
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+    <!-- =====================================================
+         LEFT SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                AI
+            </div>
+
+            <div>
+                <h2>AI Vision</h2>
+                <span>Analyzer</span>
+            </div>
+
+        </div>
+
+
+        <!-- NAVIGATION -->
+
+        <nav>
+
+            <a href="/dashboard"
+               class="nav-item">
+
+                Dashboard
+
+            </a>
+
+
+            <a href="/analytics"
+               class="nav-item">
+
+                Analytics
+
+            </a>
+
+
+            <a href="/history"
+               class="nav-item active">
+
+                History
+
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- HEADER -->
+
+        <header class="top-header">
+
+            <h1>
+                Detection History
+            </h1>
+
+            <p>
+                View previous image analysis results.
+            </p>
+
+        </header>
+
+
+
+        <!-- =================================================
+             HISTORY TABLE
+        ================================================== -->
+
+        <section class="upload-card">
+
+
+            <table class="data-table">
+
+
+                <!-- TABLE HEADER -->
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Image
+                        </th>
+
+                        <th>
+                            Object
+                        </th>
+
+                        <th>
+                            Confidence
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+
+                <!-- TABLE DATA -->
+
+                <tbody>
+
+
+                    {% for record in records %}
+
+                    <tr>
+
+                        <!-- IMAGE NAME -->
+
+                        <td>
+                            {{ record["image_name"] }}
+                        </td>
+
+
+                        <!-- DETECTED OBJECT -->
+
+                        <td>
+                            {{ record["object_name"] }}
+                        </td>
+
+
+                        <!-- CONFIDENCE -->
+
+                        <td>
+                            {{ record["confidence"] }}%
+                        </td>
+
+                    </tr>
+
+
+                    {% else %}
+
+                    <!-- NO HISTORY -->
+
+                    <tr>
+
+                        <td colspan="3">
+
+                            No detection history yet.
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </section>
+
+
+    </main>
+
+</div>
+
+</body>
+
+</html>

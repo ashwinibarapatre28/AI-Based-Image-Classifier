@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Analytics - AI Vision Analyzer</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='dashboard.css') }}">
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                AI
+            </div>
+
+            <div>
+                <h2>AI Vision</h2>
+                <span>Analyzer</span>
+            </div>
+
+        </div>
+
+
+        <nav>
+
+            <a href="/dashboard"
+               class="nav-item">
+
+                Dashboard
+
+            </a>
+
+
+            <a href="/analytics"
+               class="nav-item active">
+
+                Analytics
+
+            </a>
+
+
+            <a href="/history"
+               class="nav-item">
+
+                History
+
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <main class="main-content">
+
+
+        <header class="top-header">
+
+            <h1>Analytics</h1>
+
+            <p>
+                Analyze object detection performance.
+            </p>
+
+        </header>
+
+
+        <section class="stats-grid">
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🎯
+                </div>
+
+                <div>
+
+                    <h3>
+                        Total Objects
+                    </h3>
+
+                    <strong>
+                        {{ total_objects }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    📈
+                </div>
+
+                <div>
+
+                    <h3>
+                        Avg. Confidence
+                    </h3>
+
+                    <strong>
+                        {{ avg_confidence }}%
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+        <section class="upload-card">
+
+            <h2>
+                Objects Detected
+            </h2>
+
+            <br>
+
+
+            <table class="data-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Object
+                        </th>
+
+                        <th>
+                            Detection Count
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for item in object_data %}
+
+                    <tr>
+
+                        <td>
+                            {{ item["object_name"] }}
+                        </td>
+
+                        <td>
+                            {{ item["count"] }}
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+
+                        <td colspan="2">
+                            No detection data available.
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+
+        </section>
+
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
