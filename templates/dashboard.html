@@ -13,6 +13,15 @@
     <link rel="stylesheet"
           href="{{ url_for('static', filename='dashboard.css') }}">
 
+    <script>
+        (function() {
+            var theme = localStorage.getItem('ai_vision_theme') || 'light';
+            if (theme !== 'light') {
+                document.documentElement.setAttribute('data-theme', theme);
+            }
+        })();
+    </script>
+
 </head>
 
 
@@ -27,17 +36,15 @@
 
     <aside class="sidebar">
 
-        <div class="logo">
-
-            <div class="logo-icon">
-                AI
+        <div class="sidebar-header-row">
+            <div class="logo">
+                <div class="logo-icon">AI</div>
+                <div>
+                    <h2>AI Vision</h2>
+                    <span>Analyzer</span>
+                </div>
             </div>
-
-            <div>
-                <h2>AI Vision</h2>
-                <span>Analyzer</span>
-            </div>
-
+            <button id="sidebarCloseBtn" class="sidebar-close-btn" aria-label="Close menu">&times;</button>
         </div>
 
 
@@ -66,9 +73,35 @@
 
             </a>
 
+
+            <a href="/settings"
+               class="nav-item">
+
+                Settings
+
+            </a>
+
         </nav>
 
     </aside>
+
+    <!-- BACKDROP FOR MOBILE -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <!-- =====================================================
+         MOBILE TOPBAR
+    ====================================================== -->
+    <div class="mobile-nav-bar">
+        <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Open menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div class="mobile-nav-logo">
+            <div class="logo-icon-sm">AI</div>
+            <span>AI Vision</span>
+        </div>
+    </div>
 
 
     <!-- =====================================================
@@ -213,8 +246,6 @@
 
             </div>
 
-
-
             <!-- =================================================
                  UPLOAD FORM
             ================================================== -->
@@ -251,6 +282,45 @@
 
                 </div>
 
+
+                <!-- =================================================
+                     MODEL SELECTOR
+                ================================================== -->
+
+                <div class="model-select-container">
+
+                    <label class="model-select-label">
+                        <span class="label-title">Select AI Detection Model</span>
+                        <span class="label-subtitle">Choose between real-time YOLOv8 or deep Faster R-CNN</span>
+                    </label>
+
+                    <div class="model-options-row">
+
+                        <label class="model-card-option">
+                            <input type="radio" name="model" value="yolo" checked>
+                            <div class="model-card-content">
+                                <div class="model-card-header">
+                                    <span class="model-badge-tag tag-yolo">⚡ YOLOv8</span>
+                                    <span class="model-speed">Ultra Fast</span>
+                                </div>
+                                <p class="model-desc">One-stage detector optimized for real-time bounding box extraction.</p>
+                            </div>
+                        </label>
+
+                        <label class="model-card-option">
+                            <input type="radio" name="model" value="faster_rcnn">
+                            <div class="model-card-content">
+                                <div class="model-card-header">
+                                    <span class="model-badge-tag tag-rcnn">🎯 Faster R-CNN</span>
+                                    <span class="model-speed">ResNet-50 FPN</span>
+                                </div>
+                                <p class="model-desc">Two-stage Region Proposal Network with deep ResNet feature pyramid.</p>
+                            </div>
+                        </label>
+
+                    </div>
+
+                </div>
 
 
                 <!-- ANALYZE BUTTON -->
@@ -322,6 +392,13 @@
                     <div class="result-details">
 
 
+                        <!-- MODEL USED BADGE -->
+                        <div class="model-used-box" id="modelUsedBox" style="display: none;">
+                            <span>Detection Model:</span>
+                            <strong id="activeModelName">YOLOv8</strong>
+                        </div>
+
+
                         <!-- TOTAL OBJECTS -->
 
                         <div class="total-box">
@@ -371,10 +448,8 @@
 
 
 
-<script
-    src="{{ url_for('static', filename='dashboard.js') }}">
-</script>
-
+<script src="{{ url_for('static', filename='mobile-nav.js') }}"></script>
+<script src="{{ url_for('static', filename='dashboard.js') }}"></script>
 
 </body>
 

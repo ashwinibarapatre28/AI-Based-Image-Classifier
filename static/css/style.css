@@ -132,12 +132,56 @@ button:hover {
 }
 
 @media (max-width: 768px) {
+    .container {
+        width: 92%;
+        margin: 20px auto;
+    }
+
+    .upload-card {
+        padding: 24px 16px;
+    }
+
+    .model-select-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    input[type="file"] {
+        max-width: 100%;
+        font-size: 13px;
+    }
+
+    button {
+        width: 100%;
+        max-width: 320px;
+        padding: 14px 20px;
+        font-size: 15px;
+    }
 
     .results {
         grid-template-columns: 1fr;
+        gap: 18px;
+        margin-top: 20px;
+    }
+
+    .image-section,
+    .details-section {
+        padding: 18px 16px;
     }
 
     header h1 {
-        font-size: 28px;
+        font-size: 26px;
+    }
+
+    header p {
+        font-size: 14px;
+    }
+
+    .stat-card {
+        padding: 15px;
+    }
+
+    .stat-card span {
+        font-size: 26px;
     }
 }

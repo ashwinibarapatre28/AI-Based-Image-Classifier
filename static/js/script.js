@@ -25,6 +25,9 @@ analyzeBtn.addEventListener("click", async () => {
 
     formData.append("image", file);
 
+    const modelSelect = document.getElementById("modelSelect");
+    formData.append("model", modelSelect ? modelSelect.value : "yolo");
+
     statusText.textContent = "AI is analyzing the image...";
 
     analyzeBtn.disabled = true;

@@ -13,8 +13,16 @@
     <link rel="stylesheet"
           href="{{ url_for('static', filename='dashboard.css') }}">
 
-</head>
+    <script>
+        (function() {
+            var theme = localStorage.getItem('ai_vision_theme') || 'light';
+            if (theme !== 'light') {
+                document.documentElement.setAttribute('data-theme', theme);
+            }
+        })();
+    </script>
 
+</head>
 
 <body>
 
@@ -27,17 +35,15 @@
 
     <aside class="sidebar">
 
-        <div class="logo">
-
-            <div class="logo-icon">
-                AI
+        <div class="sidebar-header-row">
+            <div class="logo">
+                <div class="logo-icon">AI</div>
+                <div>
+                    <h2>AI Vision</h2>
+                    <span>Analyzer</span>
+                </div>
             </div>
-
-            <div>
-                <h2>AI Vision</h2>
-                <span>Analyzer</span>
-            </div>
-
+            <button id="sidebarCloseBtn" class="sidebar-close-btn" aria-label="Close menu">&times;</button>
         </div>
 
 
@@ -68,10 +74,35 @@
 
             </a>
 
+
+            <a href="/settings"
+               class="nav-item">
+
+                Settings
+
+            </a>
+
         </nav>
 
     </aside>
 
+    <!-- BACKDROP FOR MOBILE -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <!-- =====================================================
+         MOBILE TOPBAR
+    ====================================================== -->
+    <div class="mobile-nav-bar">
+        <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Open menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div class="mobile-nav-logo">
+            <div class="logo-icon-sm">AI</div>
+            <span>AI Vision</span>
+        </div>
+    </div>
 
 
     <!-- =====================================================
@@ -83,15 +114,26 @@
 
         <!-- HEADER -->
 
-        <header class="top-header">
+        <header class="top-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 15px;">
 
-            <h1>
-                Detection History
-            </h1>
+            <div>
+                <h1>
+                    Detection History
+                </h1>
 
-            <p>
-                View previous image analysis results.
-            </p>
+                <p>
+                    View previous image analysis results.
+                </p>
+            </div>
+
+            <div class="history-header-actions" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <a href="/export/csv" class="btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 10px 15px; font-size: 13px;">
+                    📊 Export CSV
+                </a>
+                <a href="/settings" class="btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 10px 15px; font-size: 13px; background: var(--accent-light); color: var(--accent-color); border-color: var(--accent-color);">
+                    ⚙️ Settings &amp; PDF Export
+                </a>
+            </div>
 
         </header>
 
@@ -103,88 +145,101 @@
 
         <section class="upload-card">
 
-
-            <table class="data-table">
-
-
-                <!-- TABLE HEADER -->
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            Image
-                        </th>
-
-                        <th>
-                            Object
-                        </th>
-
-                        <th>
-                            Confidence
-                        </th>
-
-                    </tr>
-
-                </thead>
+            <div class="table-responsive">
+                <table class="data-table">
 
 
+                    <!-- TABLE HEADER -->
 
-                <!-- TABLE DATA -->
+                    <thead>
 
-                <tbody>
+                        <tr>
 
+                            <th>
+                                Image
+                            </th>
 
-                    {% for record in records %}
+                            <th>
+                                Object
+                            </th>
 
-                    <tr>
+                            <th>
+                                Model
+                            </th>
 
-                        <!-- IMAGE NAME -->
+                            <th>
+                                Confidence
+                            </th>
 
-                        <td>
-                            {{ record["image_name"] }}
-                        </td>
+                        </tr>
 
-
-                        <!-- DETECTED OBJECT -->
-
-                        <td>
-                            {{ record["object_name"] }}
-                        </td>
-
-
-                        <!-- CONFIDENCE -->
-
-                        <td>
-                            {{ record["confidence"] }}%
-                        </td>
-
-                    </tr>
+                    </thead>
 
 
-                    {% else %}
 
-                    <!-- NO HISTORY -->
+                    <!-- TABLE DATA -->
 
-                    <tr>
-
-                        <td colspan="3">
-
-                            No detection history yet.
-
-                        </td>
-
-                    </tr>
-
-                    {% endfor %}
+                    <tbody>
 
 
-                </tbody>
+                        {% for record in records %}
+
+                        <tr>
+
+                            <!-- IMAGE NAME -->
+
+                            <td>
+                                {{ record["image_name"] }}
+                            </td>
 
 
-            </table>
+                            <!-- DETECTED OBJECT -->
 
+                            <td>
+                                {{ record["object_name"] }}
+                            </td>
+
+
+                            <!-- MODEL NAME -->
+
+                            <td>
+                                <span style="display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; background: {% if record['model_name'] and 'rcnn' in record['model_name']|lower %}#fef3c7; color: #92400e;{% else %}#dbeafe; color: #1e40af;{% endif %}">
+                                    {{ record["model_name"] if record["model_name"] else "YOLOv8" }}
+                                </span>
+                            </td>
+
+
+                            <!-- CONFIDENCE -->
+
+                            <td>
+                                {{ record["confidence"] }}%
+                            </td>
+
+                        </tr>
+
+
+                        {% else %}
+
+                        <!-- NO HISTORY -->
+
+                        <tr>
+
+                            <td colspan="4">
+
+                                No detection history yet.
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+            </div>
 
         </section>
 
@@ -192,6 +247,8 @@
     </main>
 
 </div>
+
+<script src="{{ url_for('static', filename='mobile-nav.js') }}"></script>
 
 </body>
 

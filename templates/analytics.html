@@ -2,201 +2,381 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analytics - AI Vision Analyzer</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
 
+    <!-- Theme Initializer (prevents flash) -->
+    <script>
+        (function() {
+            var theme = localStorage.getItem('ai_vision_theme') || 'light';
+            if (theme !== 'light') {
+                document.documentElement.setAttribute('data-theme', theme);
+            }
+        })();
+    </script>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 
 <body>
 
 <div class="app">
 
-
+    <!-- =====================================================
+         LEFT SIDEBAR
+    ====================================================== -->
     <aside class="sidebar">
-
-        <div class="logo">
-
-            <div class="logo-icon">
-                AI
+        <div class="sidebar-header-row">
+            <div class="logo">
+                <div class="logo-icon">AI</div>
+                <div>
+                    <h2>AI Vision</h2>
+                    <span>Analyzer</span>
+                </div>
             </div>
-
-            <div>
-                <h2>AI Vision</h2>
-                <span>Analyzer</span>
-            </div>
-
+            <button id="sidebarCloseBtn" class="sidebar-close-btn" aria-label="Close menu">&times;</button>
         </div>
 
-
         <nav>
-
-            <a href="/dashboard"
-               class="nav-item">
-
-                Dashboard
-
-            </a>
-
-
-            <a href="/analytics"
-               class="nav-item active">
-
-                Analytics
-
-            </a>
-
-
-            <a href="/history"
-               class="nav-item">
-
-                History
-
-            </a>
-
+            <a href="/dashboard" class="nav-item">Dashboard</a>
+            <a href="/analytics" class="nav-item active">Analytics</a>
+            <a href="/history" class="nav-item">History</a>
+            <a href="/settings" class="nav-item">Settings</a>
         </nav>
-
     </aside>
 
+    <!-- BACKDROP FOR MOBILE -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
+    <!-- =====================================================
+         MOBILE TOPBAR
+    ====================================================== -->
+    <div class="mobile-nav-bar">
+        <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Open menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div class="mobile-nav-logo">
+            <div class="logo-icon-sm">AI</div>
+            <span>AI Vision</span>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
     <main class="main-content">
 
-
+        <!-- HEADER -->
         <header class="top-header">
-
-            <h1>Analytics</h1>
-
-            <p>
-                Analyze object detection performance.
-            </p>
-
+            <h1>Analytics & Visual Insights</h1>
+            <p>Visual breakdown of detected objects, AI model performance, and confidence metrics.</p>
         </header>
 
-
+        <!-- =================================================
+             TOP METRICS CARDS (4 STAT CARDS)
+        ================================================== -->
         <section class="stats-grid">
 
-
             <div class="stat-card">
-
-                <div class="stat-icon">
-                    🎯
-                </div>
-
+                <div class="stat-icon">🎯</div>
                 <div>
-
-                    <h3>
-                        Total Objects
-                    </h3>
-
-                    <strong>
-                        {{ total_objects }}
-                    </strong>
-
+                    <h3>Total Objects</h3>
+                    <strong>{{ total_objects }}</strong>
                 </div>
-
             </div>
 
-
             <div class="stat-card">
-
-                <div class="stat-icon">
-                    📈
-                </div>
-
+                <div class="stat-icon">📷</div>
                 <div>
-
-                    <h3>
-                        Avg. Confidence
-                    </h3>
-
-                    <strong>
-                        {{ avg_confidence }}%
-                    </strong>
-
+                    <h3>Images Analyzed</h3>
+                    <strong>{{ unique_images }}</strong>
                 </div>
-
             </div>
 
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div>
+                    <h3>Avg. Confidence</h3>
+                    <strong>{{ avg_confidence }}%</strong>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🏆</div>
+                <div>
+                    <h3>Top Category</h3>
+                    <strong style="font-size: 19px; text-transform: capitalize;">{{ top_object_name }}</strong>
+                </div>
+            </div>
 
         </section>
 
+        {% if total_objects > 0 %}
 
-        <section class="upload-card">
+        <!-- =================================================
+             CHARTS GRID
+        ================================================== -->
+        <section class="charts-grid">
 
-            <h2>
-                Objects Detected
-            </h2>
+            <!-- BAR CHART: TOP DETECTED OBJECTS -->
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <h2>📊 Most Detected Objects</h2>
+                    <span>Frequency breakdown</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="objectsBarChart"></canvas>
+                </div>
+            </div>
 
+            <!-- DOUGHNUT CHART: MODEL BREAKDOWN -->
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <h2>🍩 AI Model Usage</h2>
+                    <span>YOLOv8 vs Faster R-CNN</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="modelDoughnutChart"></canvas>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- CONFIDENCE DISTRIBUTION CHART -->
+        <section class="chart-card confidence-chart-card">
+            <div class="chart-card-header">
+                <h2>📈 Confidence Score Distribution</h2>
+                <span>Detection certainty metrics</span>
+            </div>
+            <div class="chart-container" style="height: 250px;">
+                <canvas id="confidenceChart"></canvas>
+            </div>
+        </section>
+
+        {% else %}
+
+        <section class="upload-card" style="text-align: center; padding: 50px 20px; margin-bottom: 30px;">
+            <div style="font-size: 48px; margin-bottom: 12px;">📊</div>
+            <h2>No Analytics Data Available Yet</h2>
+            <p style="color: var(--text-secondary); max-width: 450px; margin: auto;">Upload and analyze images from the Dashboard to see charts, frequency metrics, and AI model comparisons here.</p>
             <br>
-
-
-            <table class="data-table">
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            Object
-                        </th>
-
-                        <th>
-                            Detection Count
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody>
-
-                    {% for item in object_data %}
-
-                    <tr>
-
-                        <td>
-                            {{ item["object_name"] }}
-                        </td>
-
-                        <td>
-                            {{ item["count"] }}
-                        </td>
-
-                    </tr>
-
-                    {% else %}
-
-                    <tr>
-
-                        <td colspan="2">
-                            No detection data available.
-                        </td>
-
-                    </tr>
-
-                    {% endfor %}
-
-                </tbody>
-
-            </table>
-
-
+            <a href="/dashboard" class="btn-secondary" style="display: inline-block; padding: 10px 20px; text-decoration: none; background: var(--accent-color); color: white; border: none; border-radius: 8px;">Go to Dashboard</a>
         </section>
 
+        {% endif %}
+
+        <!-- =================================================
+             DETAILED BREAKDOWN TABLE
+        ================================================== -->
+        <section class="upload-card">
+            <div class="section-title">
+                <h2>Detailed Detection Counts</h2>
+                <p>Complete category breakdown across all analyzed images.</p>
+            </div>
+
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">#</th>
+                            <th>Object Category</th>
+                            <th>Detections</th>
+                            <th>Percentage Share</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in object_data %}
+                        <tr>
+                            <td><strong>{{ loop.index }}</strong></td>
+                            <td style="text-transform: capitalize; font-weight: 600;">
+                                {{ item["object_name"] }}
+                            </td>
+                            <td>
+                                {{ item["count"] }}
+                            </td>
+                            <td>
+                                {% set pct = ((item["count"] / total_objects) * 100)|round(1) if total_objects > 0 else 0 %}
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="flex: 1; height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden; max-width: 140px;">
+                                        <div style="width: {{ pct }}%; height: 100%; background: var(--accent-color); border-radius: 4px;"></div>
+                                    </div>
+                                    <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">{{ pct }}%</span>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: var(--text-secondary);">
+                                No detection records found.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
     </main>
 
 </div>
 
-</body>
+{% if total_objects > 0 %}
+<!-- =====================================================
+     CHART.JS INITIALIZATION SCRIPT
+====================================================== -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    const textColor = isDark ? "#94a3b8" : "#64748b";
+    const gridColor = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.06)";
 
+    // Server-side data arrays
+    const objectLabels = {{ object_labels | tojson }};
+    const objectCounts = {{ object_counts | tojson }};
+    const modelLabels = {{ model_labels | tojson }};
+    const modelCounts = {{ model_counts | tojson }};
+    const confLabels = {{ conf_labels | tojson }};
+    const confCounts = {{ conf_counts | tojson }};
+
+    // 1. TOP DETECTED OBJECTS (Bar Chart)
+    const ctxBar = document.getElementById("objectsBarChart");
+    if (ctxBar) {
+        new Chart(ctxBar, {
+            type: "bar",
+            data: {
+                labels: objectLabels,
+                datasets: [{
+                    label: "Detections",
+                    data: objectCounts,
+                    backgroundColor: "rgba(37, 99, 235, 0.8)",
+                    hoverBackgroundColor: "rgba(29, 78, 216, 1)",
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        padding: 10,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                return ` ${context.parsed.y} detections`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: textColor, font: { weight: "500" } }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: gridColor },
+                        ticks: { color: textColor, precision: 0 }
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. MODEL USAGE BREAKDOWN (Doughnut Chart)
+    const ctxDoughnut = document.getElementById("modelDoughnutChart");
+    if (ctxDoughnut) {
+        new Chart(ctxDoughnut, {
+            type: "doughnut",
+            data: {
+                labels: modelLabels,
+                datasets: [{
+                    data: modelCounts,
+                    backgroundColor: [
+                        "#2563eb", // YOLOv8 (Royal Blue)
+                        "#f59e0b", // Faster R-CNN (Amber Gold)
+                        "#10b981", // Extra (Green)
+                        "#8b5cf6"  // Extra (Purple)
+                    ],
+                    borderWidth: 2,
+                    borderColor: isDark ? "#131b2e" : "#ffffff",
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: "bottom",
+                        labels: {
+                            color: textColor,
+                            padding: 14,
+                            font: { size: 12, weight: "600" }
+                        }
+                    },
+                    tooltip: {
+                        padding: 10,
+                        cornerRadius: 8
+                    }
+                },
+                cutout: "68%"
+            }
+        });
+    }
+
+    // 3. CONFIDENCE DISTRIBUTION (Horizontal Bar Chart)
+    const ctxConf = document.getElementById("confidenceChart");
+    if (ctxConf) {
+        new Chart(ctxConf, {
+            type: "bar",
+            data: {
+                labels: confLabels,
+                datasets: [{
+                    label: "Detections in Range",
+                    data: confCounts,
+                    backgroundColor: [
+                        "#10b981", // 90-100% (Green)
+                        "#3b82f6", // 75-89% (Blue)
+                        "#f59e0b", // 50-74% (Yellow)
+                        "#ef4444"  // <50% (Red)
+                    ],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                indexAxis: "y",
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { padding: 10, cornerRadius: 8 }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: { color: gridColor },
+                        ticks: { color: textColor, precision: 0 }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { color: textColor, font: { weight: "600" } }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endif %}
+
+<script src="{{ url_for('static', filename='mobile-nav.js') }}"></script>
+</body>
 </html>

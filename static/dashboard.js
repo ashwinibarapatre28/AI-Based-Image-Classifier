@@ -77,6 +77,33 @@ uploadForm.addEventListener(
             file
         );
 
+// Auto-select preferred model from settings
+document.addEventListener("DOMContentLoaded", function() {
+    const defaultModel = localStorage.getItem("ai_vision_default_model");
+    if (defaultModel) {
+        const targetRadio = document.querySelector(`input[name="model"][value="${defaultModel}"]`);
+        if (targetRadio) {
+            targetRadio.checked = true;
+        }
+    }
+});
+
+        const selectedModel =
+            document.querySelector('input[name="model"]:checked');
+
+        formData.append(
+            "model",
+            selectedModel ? selectedModel.value : "yolo"
+        );
+
+        const savedConfidence =
+            localStorage.getItem("ai_vision_confidence") || "50";
+
+        formData.append(
+            "confidence",
+            savedConfidence
+        );
+
 
         try {
 
@@ -110,6 +137,22 @@ uploadForm.addEventListener(
                     "Analysis failed.";
 
                 return;
+            }
+
+
+            /* =========================================
+               UPDATE ACTIVE MODEL BADGE
+            ========================================== */
+
+            const modelUsedBox =
+                document.getElementById("modelUsedBox");
+
+            const activeModelName =
+                document.getElementById("activeModelName");
+
+            if (modelUsedBox && activeModelName && data.model) {
+                activeModelName.textContent = data.model;
+                modelUsedBox.style.display = "flex";
             }
 
 

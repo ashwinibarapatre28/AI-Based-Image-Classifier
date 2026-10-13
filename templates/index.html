@@ -31,6 +31,16 @@
                 Upload an image and let AI detect objects automatically.
             </p>
 
+            <div class="model-select-wrapper" style="margin: 15px auto; max-width: 380px; text-align: left;">
+                <label for="modelSelect" style="font-weight: 600; font-size: 14px; display: block; margin-bottom: 6px;">
+                    Select AI Detection Model:
+                </label>
+                <select id="modelSelect" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; background: #fff; cursor: pointer;">
+                    <option value="yolo" selected>⚡ YOLOv8 (Ultra Fast)</option>
+                    <option value="faster_rcnn">🎯 Faster R-CNN (ResNet-50 FPN)</option>
+                </select>
+            </div>
+
             <input
                 type="file"
                 id="imageInput"

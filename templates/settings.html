@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - AI Vision Analyzer</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+
+    <!-- Theme Initializer (prevents flash of unstyled theme) -->
+    <script>
+        (function() {
+            var theme = localStorage.getItem('ai_vision_theme') || 'light';
+            if (theme !== 'light') {
+                document.documentElement.setAttribute('data-theme', theme);
+            }
+        })();
+    </script>
+
+    <!-- jsPDF & AutoTable for client-side PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- =====================================================
+         LEFT SIDEBAR
+    ====================================================== -->
+    <aside class="sidebar">
+        <div class="sidebar-header-row">
+            <div class="logo">
+                <div class="logo-icon">AI</div>
+                <div>
+                    <h2>AI Vision</h2>
+                    <span>Analyzer</span>
+                </div>
+            </div>
+            <button id="sidebarCloseBtn" class="sidebar-close-btn" aria-label="Close menu">&times;</button>
+        </div>
+
+        <nav>
+            <a href="/dashboard" class="nav-item">Dashboard</a>
+            <a href="/analytics" class="nav-item">Analytics</a>
+            <a href="/history" class="nav-item">History</a>
+            <a href="/settings" class="nav-item active">Settings</a>
+        </nav>
+    </aside>
+
+    <!-- BACKDROP FOR MOBILE -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <!-- =====================================================
+         MOBILE TOPBAR
+    ====================================================== -->
+    <div class="mobile-nav-bar">
+        <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Open menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div class="mobile-nav-logo">
+            <div class="logo-icon-sm">AI</div>
+            <span>AI Vision</span>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+    <main class="main-content">
+
+        <!-- HEADER -->
+        <header class="top-header">
+            <h1>Settings & Preferences</h1>
+            <p>Customize your workspace appearance, export detection records, and manage storage.</p>
+        </header>
+
+        <!-- TOAST NOTIFICATION -->
+        <div id="toastMessage" class="toast-notification hidden"></div>
+
+        <!-- =================================================
+             SETTINGS SECTIONS GRID
+        ================================================== -->
+        <div class="settings-grid">
+
+            <!-- =============================================
+                 1. COLOR THEME & APPEARANCE
+            ============================================== -->
+            <section class="settings-card">
+                <div class="settings-card-header">
+                    <div class="settings-icon-bubble">🎨</div>
+                    <div>
+                        <h2>Theme & Appearance</h2>
+                        <p>Select your preferred color scheme across all pages.</p>
+                    </div>
+                </div>
+
+                <div class="theme-options-grid">
+
+                    <!-- LIGHT THEME -->
+                    <label class="theme-card-option" data-theme-val="light">
+                        <input type="radio" name="app_theme" value="light">
+                        <div class="theme-card-inner">
+                            <div class="theme-preview-box preview-light">
+                                <span class="preview-accent accent-blue"></span>
+                                <span class="preview-card-shape"></span>
+                            </div>
+                            <div class="theme-card-meta">
+                                <strong>Light Minimal</strong>
+                                <span>Crisp light background with royal blue accents</span>
+                            </div>
+                        </div>
+                    </label>
+
+                    <!-- DARK ECLIPSE -->
+                    <label class="theme-card-option" data-theme-val="dark">
+                        <input type="radio" name="app_theme" value="dark">
+                        <div class="theme-card-inner">
+                            <div class="theme-preview-box preview-dark">
+                                <span class="preview-accent accent-dark-blue"></span>
+                                <span class="preview-card-shape"></span>
+                            </div>
+                            <div class="theme-card-meta">
+                                <strong>Dark Eclipse</strong>
+                                <span>Deep slate dark mode with glowing blue highlights</span>
+                            </div>
+                        </div>
+                    </label>
+
+                </div>
+            </section>
+
+            <!-- =============================================
+                 2. DATA EXPORT (PDF, CSV)
+            ============================================== -->
+            <section class="settings-card">
+                <div class="settings-card-header">
+                    <div class="settings-icon-bubble">📄</div>
+                    <div>
+                        <h2>Export Data</h2>
+                        <p>Download your complete detection history for reports or external tools.</p>
+                    </div>
+                </div>
+
+                <div class="export-banner">
+                    <span>Available Records:</span>
+                    <strong id="exportRecordCount">{{ total_detections }} detections</strong>
+                </div>
+
+                <div class="export-actions-grid">
+
+                    <!-- PDF EXPORT BUTTON -->
+                    <button id="exportPdfBtn" class="export-btn export-pdf-btn">
+                        <span class="export-icon">📑</span>
+                        <div class="export-btn-text">
+                            <strong>Export as PDF</strong>
+                            <span>Branded document with summary & table</span>
+                        </div>
+                    </button>
+
+                    <!-- CSV EXPORT BUTTON -->
+                    <a href="/export/csv" class="export-btn export-csv-btn">
+                        <span class="export-icon">📊</span>
+                        <div class="export-btn-text">
+                            <strong>Export as CSV</strong>
+                            <span>Tabular data for Excel or Google Sheets</span>
+                        </div>
+                    </a>
+
+                </div>
+            </section>
+
+            <!-- =============================================
+                 3. AI DETECTION PREFERENCES
+            ============================================== -->
+            <section class="settings-card">
+                <div class="settings-card-header">
+                    <div class="settings-icon-bubble">⚡</div>
+                    <div>
+                        <h2>AI Model Preferences</h2>
+                        <p>Configure default architecture and detection parameters.</p>
+                    </div>
+                </div>
+
+                <div class="pref-group">
+                    <label class="pref-label">Default Object Detection Model:</label>
+                    <div class="pref-model-toggle">
+                        <label class="pref-radio-label">
+                            <input type="radio" name="default_model" value="yolo">
+                            <span>⚡ YOLOv8 (Real-time & Fast)</span>
+                        </label>
+                        <label class="pref-radio-label">
+                            <input type="radio" name="default_model" value="faster_rcnn">
+                            <span>🎯 Faster R-CNN (ResNet-50 FPN)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="pref-group">
+                    <div class="slider-header">
+                        <label class="pref-label">Default Confidence Threshold:</label>
+                        <span id="confidenceValueBadge" class="confidence-badge">50%</span>
+                    </div>
+                    <input type="range" id="confidenceSlider" min="20" max="90" step="5" value="50" class="styled-slider">
+                    <span class="pref-hint">Lower values detect more objects; higher values reduce false positives.</span>
+                </div>
+            </section>
+
+            <!-- =============================================
+                 4. STORAGE & HISTORY RESET (DANGER ZONE)
+            ============================================== -->
+            <section class="settings-card danger-card">
+                <div class="settings-card-header">
+                    <div class="settings-icon-bubble danger-bubble">🗑️</div>
+                    <div>
+                        <h2>Data Management & Storage</h2>
+                        <p>Review database usage or wipe past detection records.</p>
+                    </div>
+                </div>
+
+                <div class="storage-metrics-row">
+                    <div class="storage-metric-box">
+                        <span>Database Records</span>
+                        <strong id="statTotalDetections">{{ total_detections }}</strong>
+                    </div>
+                    <div class="storage-metric-box">
+                        <span>Database Size</span>
+                        <strong id="statDbSize">{{ db_size_kb }} KB</strong>
+                    </div>
+                    <div class="storage-metric-box">
+                        <span>Stored Images</span>
+                        <strong id="statUploadsCount">{{ uploads_count }} files</strong>
+                    </div>
+                    <div class="storage-metric-box">
+                        <span>Uploads Size</span>
+                        <strong id="statUploadsSize">{{ uploads_size_kb }} KB</strong>
+                    </div>
+                </div>
+
+                <div class="danger-action-row">
+                    <div class="danger-action-info">
+                        <strong>Delete Detection History</strong>
+                        <span>Permanently remove all detection records from SQLite database.</span>
+                    </div>
+                    <button id="openClearModalBtn" class="danger-btn">
+                        Delete History...
+                    </button>
+                </div>
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+<!-- =========================================================
+     DELETE CONFIRMATION MODAL
+========================================================== -->
+<div id="clearModal" class="modal-overlay hidden">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3>⚠️ Confirm History Deletion</h3>
+            <button id="closeModalBtn" class="modal-close">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <p>Are you sure you want to delete all detection history? This action <strong>cannot be undone</strong>.</p>
+
+            <label class="modal-checkbox-label">
+                <input type="checkbox" id="deleteFilesCheckbox">
+                <span>Also delete processed detection images from server storage</span>
+            </label>
+        </div>
+
+        <div class="modal-footer">
+            <button id="cancelModalBtn" class="btn-secondary">Cancel</button>
+            <button id="confirmClearBtn" class="btn-danger-confirm">Yes, Delete All History</button>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='mobile-nav.js') }}"></script>
+<script src="{{ url_for('static', filename='settings.js') }}"></script>
+
+</body>
+</html>
